@@ -13,20 +13,6 @@ This project closes the traceability loop between a production PLC and the plant
 
 The application runs on an ARM/Linux edge node co-located with the PLC, subscribes to OPC UA tags, triggers a SATO label printer via NiceLabel Automation over TCP/IP, and writes each print event back to a SQL Server database.
 
----
-
-## Architecture
-
-PLC (Modicon)
-    │
-    │  OPC UA (serial number, heartbeat, print trigger tags)
-    ▼
-Edge Compute Node (ARM/Linux, Docker)
-    │
-    ├──► TCP/IP ──► NiceLabel Automation ──► SATO M84Pro Printer
-    │
-    └──► pyodbc ──► SQL Server (print event log)
-```
 
 ## Features
 
@@ -41,7 +27,6 @@ Edge Compute Node (ARM/Linux, Docker)
 
 ## Tech Stack
 
-
 - Runtime - Python 3.x (ARM/Linux) -
 - Containerization - Docker, Portainer -
 - PLC Communication - OPC UA (`opcua` / `asyncua`) -
@@ -49,14 +34,12 @@ Edge Compute Node (ARM/Linux, Docker)
 - Database - SQL Server via `pyodbc` -
 - Hardware - Modicon M580 edge compute node, SATO M84Pro -
 
----
+
 
 ## Configuration
 
 All runtime parameters are injected via environment variables — no hardcoded values, no image rebuilds needed for config changes.
-
-- Variable - Description -
----------
+```
 - `OPC_UA_URL` - OPC UA server endpoint on the PLC 
 - `SERIAL_TAG` - Node ID for the serial number tag 
 - `TRIGGER_TAG` - Node ID for the print trigger tag 
@@ -64,8 +47,8 @@ All runtime parameters are injected via environment variables — no hardcoded v
 - `PRINTER_HOST` - IP address of NiceLabel Automation host 
 - `PRINTER_PORT` - TCP port for NiceLabel 
 - `DB_CONN_STR` - pyodbc connection string for SQL Server 
+```
 
----
 
 ## How It Works
 
@@ -75,7 +58,7 @@ All runtime parameters are injected via environment variables — no hardcoded v
 4. A TCP/IP message is sent to NiceLabel Automation, which generates and sends the label job to the SATO M84Pro printer.
 5. On print confirmation, the app writes a record to SQL Server via `pyodbc` — timestamp, serial number, and print status.
 
----
+
 
 ## Deployment
 
@@ -94,7 +77,7 @@ docker run -d \
   -e PRINTER_PORT= \
   -e DB_CONN_STR="DRIVER={ODBC Driver 17 for SQL Server};SERVER=..." \
   traceability-edge
-
+```
 
 ## Project Context
 
